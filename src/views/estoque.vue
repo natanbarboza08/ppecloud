@@ -3,32 +3,32 @@
     <!-- Cabeçalho -->
     <header class="header-section flex-between">
       <div>
-        <h1>Inventory control</h1>
-        <p>Manage PPE stock balance and availability.</p>
+        <h1>ESTOQUE</h1>
+        <p>Gerencie o saldo de EPIs e disponibilidade.</p>
       </div>
       <button class="btn btn-outline flex-center" @click="carregar" :disabled="loading">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 8px;">
           <path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
         </svg>
-        Refresh page
+        Recarregar página
       </button>
     </header>
 
     <!-- Ajuste de Estoque -->
     <div class="card-form">
       <div class="card-header">
-        <h2>Update quantity</h2>
+        <h2>Atualizar quantidade</h2>
       </div>
       
       <div class="main-form">
         <div class="form-row">
           <div class="form-group">
-            <label>PPE</label>
+            <label>EPI</label>
             <select v-model="form.epi_id" class="custom-select">
-              <option value="">Select the PPE...</option>
+              <option value="">Selecione o EPI...</option>
               <!-- Alterado: item agora é o próprio EPI -->
               <option v-for="item in estoque" :key="item.id" :value="item.id">
-                {{ item.nome }} (Current balance: {{ item.quantidade || 0 }})
+                {{ item.nome }} (Saldo disponível: {{ item.quantidade || 0 }})
               </option>
             </select>
           </div>
@@ -56,22 +56,22 @@
     <!-- Tabela de Saldo -->
     <div class="card-table">
       <div class="card-header flex-between">
-        <h2>Items in stock</h2>
-        <span class="badge badge-blue">{{ estoque.length }} cataloged items</span>
+        <h2>Itens em estoque</h2>
+        <span class="badge badge-blue">{{ estoque.length }} itens catalogados</span>
       </div>
 
       <div v-if="loading" class="text-center" style="padding: 40px;">
-        <div class="spinner"></div> Loading inventory...
+        <div class="spinner"></div> Carregando estoque...
       </div>
       
       <div v-else class="table-container">
         <table class="styled-table">
           <thead>
             <tr>
-              <th>PPE / CA</th>
-              <th>Description</th>
-              <th>Quantity</th>
-              <th class="text-center">Status</th>
+              <th>EPI / CA</th>
+              <th>Descrição</th>
+              <th>Quantidade</th>
+              <th class="text-center">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -89,13 +89,13 @@
               </td>
               <td class="text-center">
                 <span :class="badgeClass(item.quantidade)">
-                  {{ item.quantidade <= 0 ? 'Out of stock' : item.quantidade < 10 ? 'Low stock' : 'Normal stock level' }}
+                  {{ item.quantidade <= 0 ? 'Sem estoque' : item.quantidade < 10 ? 'Estoque baixo' : 'Estoque normal' }}
                 </span>
               </td>
             </tr>
             <tr v-if="estoque.length === 0">
               <td colspan="4" class="text-center cargo-text" style="padding: 40px;">
-                No PPE items found.
+                Nenhum EPI foi encontrado.
               </td>
             </tr>
           </tbody>
