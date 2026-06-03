@@ -71,7 +71,7 @@
               <th>EPI / CA</th>
               <th>Descrição</th>
               <th>Quantidade</th>
-              <th class="text-center">Ações</th>
+              <th class="text-center">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -176,10 +176,7 @@ onMounted(carregar)
 
 <style scoped>
 
-@import url('https://fonts.googleapis.com/css2?family=Secular+One&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rubik:ital,wght@0,800;1,800&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&display=swap');
 * {
   margin: 0;
   padding: 0;
@@ -207,13 +204,13 @@ onMounted(carregar)
   margin-top: 0; /* Remove o espaço padrão acima do título h1 */
   padding-top: 0;
   font-size: 1.8rem;
-  font-family: "Secular One", sans-serif;
+  font-family: "Noto Sans", sans-serif;
 }
 
 .header-section p {
   margin-top: -5px; /* Puxa o subtítulo levemente para mais perto do título */
   color: #000000;
-  font-family: "Secular One", sans-serif;
+  font-family: "Noto Sans", sans-serif;
 }
 
 /* 3. Ajuste nos Cards para destacar no fundo branco */
@@ -226,7 +223,8 @@ onMounted(carregar)
 }
 
 .card-header {
-  font-family: "Rubik", sans-serif;
+  font-family: "Noto Sans", sans-serif;
+  margin-bottom: 10px;
 }
 
 .info-banner { 
@@ -245,19 +243,19 @@ onMounted(carregar)
 .chart-box { height: 250px; position: relative; }
 .filter-card { margin-bottom: 20px; }
 .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
-.form-group { display: flex; flex-direction: column; gap: 5px; font-size: 0.8rem; font-weight: bold; color: #828282; font-family: "Rubik", sans-serif; }
+.form-group { display: flex; flex-direction: column; gap: 5px; font-size: 0.8rem; font-weight: bold; color: #000000; font-family: "Noto Sans", sans-serif; text-align: left; }
 .custom-select {color: #828282}
-input, select { padding: 8px; border: 1px solid #828282; border-radius: 6px; color: #828282}
+input, select { padding: 8px; border: 1px solid #000000; border-radius: 6px; color: #828282}
 .action-bar { margin-top: 15px; display: flex; gap: 10px; }
-.btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; color: #000000; background-color: #9BC9FF; }
-.btn:hover { background-color: rgb(120, 180, 255); text-shadow: 0.4px 0 0 currentColor; }
-.btn-primary { background: #9BC9FF; color: black; margin-top: -5px; margin-bottom: 20px;}
+.btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; color: #FFFFFF; background-color: #00296B; margin-top: 10px; }
+.btn:hover { background-color: #001941; text-shadow: 0.4px 0 0 currentColor; }
+.btn-primary { background: #00296B; color: #FFFFFF; margin-top: -5px; margin-bottom: 20px;}
 .btn-pdf { background: #10b981; color: white; }
 .btn:disabled { background: #E2E2E2; cursor: not-allowed; }
-.table-container { border: 1px solid #828282; border-radius: 12px; margin-top: 10px; }
-.styled-table { width: 100%; border-collapse: collapse; background: #F2F2F2; overflow: hidden; border-radius: 12px;}
-.styled-table th { background: #E2E2E2; padding: 12px; text-align: left; font-size: 0.75rem; color: #828282; text-transform: uppercase; border-bottom: 1px solid #828282; }
-.styled-table td { padding: 12px; border-top: 1px solid #828282; font-size: 0.9rem; }
+.table-container { border: 1px solid #000000; border-radius: 12px; margin-top: 10px; }
+.styled-table { width: 100%; border-collapse: collapse; background: #F2F2F2; overflow: hidden; border-radius: 12px; text-align: center; font-family: "Noto Sans", sans-serif; }
+.styled-table th { background: #00296B; padding: 12px; text-align: left; font-size: 0.75rem; color: #FFFFFF; text-transform: uppercase; border-bottom: 1px solid #000000; text-align: center; }
+.styled-table td { padding: 12px; border-top: 1px solid #000000; font-size: 0.9rem; }
 .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; }
 .badge-ok { background: #dcfce7; color: #166534; }
 .badge-warn { background: #fee2e2; color: #991b1b; }

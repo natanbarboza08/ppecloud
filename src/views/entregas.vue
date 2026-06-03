@@ -214,9 +214,9 @@ onMounted(carregar)
 
 .header-section h1 { color: #000000; font-size: 1.5rem; font-weight: 700; margin: 0; }
 
-.card-form, .card-table { background: #004381; border: 1px solid #000000; border-radius: 8px; margin-bottom: 24px; width: 100%; overflow: hidden; font-family: "Noto Sans", sans-serif; color: #FFFFFF;}
+.card-form, .card-table { background: #00296B; border: 1px solid #000000; border-radius: 8px; margin-bottom: 24px; width: 100%; overflow: hidden; font-family: "Noto Sans", sans-serif; color: #FFFFFF;}
 
-.card-header { background-color: #00296B; padding: 12px 20px; border-bottom: 1px solid #000000; font-family: "Noto Sans", sans-serif; font-weight: 400; }
+.card-header { background-color: #001f52; padding: 12px 20px; border-bottom: 1px solid #000000; font-family: "Noto Sans", sans-serif; font-weight: 400; }
 
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 

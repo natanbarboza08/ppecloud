@@ -2,7 +2,7 @@
   <div class="layout-container">
     
     <header class="header-section">
-      <h1>REGISTRO EPI</h1>
+      <h1>CADASTRO DE EPIs</h1>
       <p>Registre e gerencie seu EPI aqui.</p>
     </header>
 
@@ -19,7 +19,7 @@
               <input v-model="form.nome" type="text" placeholder="Ex.: Capacete de Segurança" required>
             </div>
             <div class="form-group">
-              <label>C.A. Numero</label>
+              <label>Número de C.A.</label>
               <input v-model="form.ca" type="text" placeholder="Ex.: 12345" required>
             </div>
           </div>
@@ -36,7 +36,7 @@
           
           <div class="action-bar">
             <button type="submit" class="btn btn-primary">
-              {{ editandoId ? 'Save changes' : 'Registro' }}
+              {{ editandoId ? 'Salvar alterações' : 'Cadastrar' }}
             </button>
             <button v-if="editandoId" type="button" @click="cancelarEdicao" class="btn btn-outline">
               Cancelar
@@ -207,6 +207,7 @@ label {
   font-size: 0.85rem; 
   font-weight: 600; 
   color: #dcdee1; 
+  text-align: left;
 }
 input { 
   padding: 11px 16px; 

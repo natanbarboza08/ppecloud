@@ -168,7 +168,7 @@ onMounted(carregar);
 
 /* Cards (Containers Principais) */
 .card-form, .card-table {
-  background: #004381;  
+  background: #00296B;  
   border-radius: 12px;
   border: 1px solid #000000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -178,7 +178,7 @@ onMounted(carregar);
 }
 
 .card-header {
-  background-color: #00296B;
+  background-color: #001f52;
   padding: 15px 24px;
   border-bottom: 1px solid #000000;
   font-family: "Noto Sans", sans-serif;
@@ -241,11 +241,11 @@ input:focus {
 /* Tabela Profissional */
 .styled-table { width: 100%; border-collapse: collapse; }
 .styled-table th {
-  background-color: #E9ECEE;
+  background-color: #001f52;
   padding: 16px 24px;
   text-align: center; /* ALTERADO: Centraliza o cabeçalho igual ao conteúdo */
   font-size: 0.80rem;
-  color: #000000;
+  color: #FFFFFF;
   text-transform: uppercase;
   font-family: "Noto Sans", sans-serif;
   vertical-align: middle; /* GARANTE: Alinhamento vertical perfeito */
