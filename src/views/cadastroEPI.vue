@@ -31,7 +31,7 @@
 
             <div class="form-group">
               <label>Quantidade Inicial</label>
-              <input v-model="form.quantidade" type="number" placeholder="Ex.: 10" required>
+              <input v-model="form.quantidade" type="number" min="1" step="1" placeholder="Ex.: 10" required>
             </div>
           
           <div class="action-bar">
