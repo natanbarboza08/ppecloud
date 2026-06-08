@@ -6,7 +6,7 @@
     <header class="header">
         <div class="empresa-info">
             <div class="empresa-logo">
-                <img src="../assets/header/logo.png" alt="Logo da Empresa" class="logo-header">
+                <img src="../assets/Header/logo.png" alt="Logo da Empresa" class="logo-header">
             </div>
             <div class="empresa-nome">Sistema de EPI</div>
         </div>
