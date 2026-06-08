@@ -26,13 +26,13 @@
         <input
           v-model="filtroFuncionario"
           type="text"
-          placeholder="ID do Funcionário"
+          placeholder="Matrícula do Funcionário"
         >
 
         <input
           v-model="filtroEpi"
           type="text"
-          placeholder="ID do EPI"
+          placeholder="CA do EPI"
         >
 
         <input
@@ -60,27 +60,41 @@
         <table>
           <thead>
             <tr>
-              <th>ID EPI</th>
+              <th>CA EPI</th>
               <th>Nome EPI</th>
-              <th>ID Funcionário</th>
-              <th>Nome Funcionário</th>
+              <th>Matrícula</th>
+              <th>Funcionário</th>
               <th>Data Entrega</th>
               <th>Quantidade</th>
             </tr>
           </thead>
 
           <tbody>
-
             <tr
               v-for="item in entregas"
               :key="item.id"
             >
-              <td>{{ item.epis?.id }}</td>
-              <td>{{ item.epis?.nome }}</td>
-              <td>{{ item.funcionarios?.id }}</td>
-              <td>{{ item.funcionarios?.nome }}</td>
-              <td>{{ formatarData(item.data_entrega) }}</td>
-              <td>{{ item.quantidade }}</td>
+              <td>{{ item.epis?.ca || '-' }}</td>
+
+              <td>
+                {{ item.epis?.nome || 'EPI não encontrado' }}
+              </td>
+
+              <td>
+                {{ item.funcionarios?.matricula || '-' }}
+              </td>
+
+              <td>
+                {{ item.funcionarios?.nome || 'Funcionário não encontrado' }}
+              </td>
+
+              <td>
+                {{ formatarData(item.data_entrega) }}
+              </td>
+
+              <td>
+                {{ item.quantidade }}
+              </td>
             </tr>
 
             <tr v-if="entregas.length === 0">
@@ -104,9 +118,7 @@ import Chart from 'chart.js/auto'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
-import { useSupabase } from '../composables/useSupabase'
-
-const { supabase } = useSupabase()
+import { supabase } from '../composables/useSupabase'
 
 const chartCanvas = ref(null)
 let grafico = null
@@ -124,132 +136,142 @@ onMounted(async () => {
 })
 
 async function carregarGrafico() {
+  try {
+    const { data, error } = await supabase
+      .from('epis')
+      .select('*')
+      .lt('quantidade', 10)
 
-  const { data, error } = await supabase
-    .from('epis')
-    .select('*')
-    .lt('quantidade', 10)
+    if (error) throw error
 
-  if (error) {
-    console.error(error)
-    return
-  }
+    episBaixoEstoque.value = data || []
 
-  episBaixoEstoque.value = data
+    await nextTick()
 
-  await nextTick()
+    if (grafico) {
+      grafico.destroy()
+    }
 
-  if (grafico) {
-    grafico.destroy()
-  }
+    grafico = new Chart(chartCanvas.value, {
+      type: 'bar',
 
-  grafico = new Chart(chartCanvas.value, {
-    type: 'bar',
+      data: {
+        labels: data.map(item => item.nome),
 
-    data: {
-      labels: data.map(item => item.nome),
+        datasets: [
+          {
+            label: 'Quantidade em Estoque',
 
-      datasets: [
-        {
-          label: 'Quantidade em Estoque',
+            data: data.map(item => item.quantidade),
 
-          data: data.map(item => item.quantidade),
+            backgroundColor: [
+              '#00296B',
+              '#003F88',
+              '#00509D',
+              '#6C757D',
+              '#ADB5BD',
+              '#4361EE',
+              '#5A78FF'
+            ],
 
-          backgroundColor: [
-            '#00296B',
-            '#003F88',
-            '#00509D',
-            '#6C757D',
-            '#ADB5BD',
-            '#4361EE',
-            '#5A78FF'
-          ],
-
-          borderRadius: 8,
-          borderWidth: 0
-        }
-      ]
-    },
-
-    options: {
-      responsive: true,
-
-      plugins: {
-        legend: {
-          display: false
-        }
+            borderRadius: 8,
+            borderWidth: 0
+          }
+        ]
       },
 
-      scales: {
-        y: {
-          beginAtZero: true
+      options: {
+        responsive: true,
+
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+
+        scales: {
+          y: {
+            beginAtZero: true
+          }
         }
       }
-    }
-  })
+    })
+
+  } catch (err) {
+    console.error('Erro ao carregar gráfico:', err)
+  }
 }
 
 async function buscarEntregas() {
+  try {
 
-  let query = supabase
-    .from('entregas')
-    .select(`
-      *,
-      epis (
+    let query = supabase
+      .from('entregas')
+      .select(`
         id,
-        nome
-      ),
-      funcionarios (
-        id,
-        nome
+        quantidade,
+        data_entrega,
+        assinatura_digital,
+        created_at,
+        funcionarios (
+          matricula,
+          nome
+        ),
+        epis (
+          nome,
+          ca
+        )
+      `)
+      .order('created_at', { ascending: false })
+
+    const { data, error } = await query
+
+    if (error) throw error
+
+    let resultado = data || []
+
+    if (filtroFuncionario.value) {
+      resultado = resultado.filter(item =>
+        String(item.funcionarios?.matricula || '')
+          .includes(filtroFuncionario.value)
       )
-    `)
-    .order('data_entrega', {
-      ascending: false
-    })
+    }
 
-  if (filtroFuncionario.value) {
-    query = query.eq(
-      'funcionario_id',
-      filtroFuncionario.value
-    )
+    if (filtroEpi.value) {
+      resultado = resultado.filter(item =>
+        String(item.epis?.ca || '')
+          .includes(filtroEpi.value)
+      )
+    }
+
+    if (filtroData.value) {
+      resultado = resultado.filter(item =>
+        item.data_entrega === filtroData.value
+      )
+    }
+
+    entregas.value = resultado
+
+  } catch (err) {
+    console.error(err)
+    entregas.value = []
   }
-
-  if (filtroEpi.value) {
-    query = query.eq(
-      'epi_id',
-      filtroEpi.value
-    )
-  }
-
-  if (filtroData.value) {
-    query = query.eq(
-      'data_entrega',
-      filtroData.value
-    )
-  }
-
-  const { data, error } = await query
-
-  if (error) {
-    console.error(error)
-    return
-  }
-
-  entregas.value = data
 }
 
-function limparFiltros() {
+async function limparFiltros() {
   filtroFuncionario.value = ''
   filtroEpi.value = ''
   filtroData.value = ''
 
-  buscarEntregas()
+  await buscarEntregas()
 }
 
 function formatarData(data) {
+  if (!data) return '-'
 
-  return new Date(data).toLocaleDateString('pt-BR')
+  const [ano, mes, dia] = data.split('-')
+
+  return `${dia}/${mes}/${ano}`
 }
 
 function gerarPDF() {
@@ -267,27 +289,27 @@ function gerarPDF() {
     28
   )
 
-  autoTable(pdf, {
-    startY: 35,
+autoTable(pdf, {
+  startY: 35,
 
-    head: [[
-      'ID EPI',
-      'Nome EPI',
-      'ID Funcionário',
-      'Nome Funcionário',
-      'Data',
-      'Qtd'
-    ]],
+  head: [[
+    'CA EPI',
+    'Nome EPI',
+    'Matrícula',
+    'Funcionário',
+    'Data',
+    'Qtd'
+  ]],
 
-    body: entregas.value.map(item => [
-      item.epis?.id || '',
-      item.epis?.nome || '',
-      item.funcionarios?.id || '',
-      item.funcionarios?.nome || '',
-      formatarData(item.data_entrega),
-      item.quantidade
-    ])
-  })
+  body: entregas.value.map(item => [
+    item.epis?.ca || '-',
+    item.epis?.nome || 'Não encontrado',
+    item.funcionarios?.matricula || '-',
+    item.funcionarios?.nome || 'Não encontrado',
+    formatarData(item.data_entrega),
+    item.quantidade
+  ])
+})
 
   pdf.save('relatorio-epis.pdf')
 }

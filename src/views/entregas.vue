@@ -111,46 +111,82 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useSupabase } from '../composables/useSupabase'
-
-const { supabase } = useSupabase()
+import { supabase } from '../composables/useSupabase'
 
 const funcionarios = ref([])
 const epis = ref([])
 const entregas = ref([])
-const loading = ref(true)
+
+const loading = ref(false)
 const erro = ref('')
 const ok = ref(false)
 
 const hoje = new Date().toISOString().slice(0, 10)
 
-const form = ref({ 
-  funcionario_id: '', 
-  epi_id: '', 
-  quantidade: 1, 
-  data_entrega: hoje, 
-  assinatura_digital: false 
+const form = ref({
+  funcionario_id: '',
+  epi_id: '',
+  quantidade: 1,
+  data_entrega: hoje,
+  assinatura_digital: false
 })
 
 async function carregar() {
   loading.value = true
   erro.value = ''
+
   try {
-    // 1. Carrega Funcionários
-    const { data: funcs } = await supabase.from('funcionarios').select('*').order('nome')
+    // Funcionários
+    const { data: funcs, error: funcsError } = await supabase
+      .from('funcionarios')
+      .select('*')
+      .order('nome')
+
+    if (funcsError) throw funcsError
+
     funcionarios.value = funcs || []
 
-    // 2. Carrega EPIs diretamente (onde o saldo real está)
-    const { data: episData } = await supabase.from('epis').select('*').order('nome')
+    // EPIs
+    const { data: episData, error: episError } = await supabase
+      .from('epis')
+      .select('*')
+      .order('nome')
+
+    if (episError) throw episError
+
     epis.value = episData || []
 
-    // 3. Carrega Histórico de Entregas
-    const { data: entData } = await supabase
+    // Entregas
+    const { data: entData, error: entError } = await supabase
       .from('entregas')
-      .select('*, funcionarios(nome, setor), epis(nome, ca)')
+      .select(`
+        id,
+        quantidade,
+        data_entrega,
+        assinatura_digital,
+        created_at,
+        funcionario_id,
+        epi_id,
+        funcionarios (
+          nome,
+          setor
+        ),
+        epis (
+          nome,
+          ca
+        )
+      `)
       .order('created_at', { ascending: false })
+
+    console.log('ENTREGAS:', entData)
+    console.log('ERRO ENTREGAS:', entError)
+
+    if (entError) throw entError
+
     entregas.value = entData || []
+
   } catch (e) {
+    console.error(e)
     erro.value = e.message
   } finally {
     loading.value = false
@@ -158,43 +194,75 @@ async function carregar() {
 }
 
 async function registrar() {
-  erro.value = ''; ok.value = false
-  
-  // Localiza o EPI selecionado para verificar o saldo
-  const epiSelecionado = epis.value.find(e => e.id === form.value.epi_id)
+  erro.value = ''
+  ok.value = false
+
+  const epiSelecionado = epis.value.find(
+    e => e.id === form.value.epi_id
+  )
+
   const qtdEstoque = epiSelecionado?.quantidade ?? 0
-  
+
   if (form.value.quantidade > qtdEstoque) {
-    erro.value = `Estoque insuficiente (${qtdEstoque} disponíveis)`; return
+    erro.value = `Estoque insuficiente (${qtdEstoque} disponíveis)`
+    return
   }
 
-  // Insere o registro da entrega
-  const { error: insertError } = await supabase.from('entregas').insert(form.value)
-  if (insertError) { erro.value = insertError.message; return }
+  const { error: insertError } = await supabase
+    .from('entregas')
+    .insert([
+      {
+        funcionario_id: form.value.funcionario_id,
+        epi_id: form.value.epi_id,
+        quantidade: form.value.quantidade,
+        data_entrega: form.value.data_entrega,
+        assinatura_digital: form.value.assinatura_digital
+      }
+    ])
 
-  // 4. ATUALIZAÇÃO: Baixa o estoque diretamente na tabela 'epis'
-  const { error: updateError } = await supabase.from('epis')
-    .update({ quantidade: qtdEstoque - form.value.quantidade })
+  if (insertError) {
+    erro.value = insertError.message
+    return
+  }
+
+  const { error: updateError } = await supabase
+    .from('epis')
+    .update({
+      quantidade: qtdEstoque - form.value.quantidade
+    })
     .eq('id', form.value.epi_id)
 
   if (updateError) {
-    erro.value = "Entrega registrada, mas ocorreu um erro ao atualizar o estoque: " + updateError.message
+    erro.value =
+      'Entrega registrada, mas houve erro ao atualizar o estoque: ' +
+      updateError.message
     return
   }
 
   ok.value = true
-  // Reseta o formulário mantendo a data de hoje
-  form.value = { funcionario_id: '', epi_id: '', quantidade: 1, data_entrega: hoje, assinatura_digital: false }
+
+  form.value = {
+    funcionario_id: '',
+    epi_id: '',
+    quantidade: 1,
+    data_entrega: hoje,
+    assinatura_digital: false
+  }
+
   await carregar()
 }
 
-function formatarData(d) {
-  if (!d) return '—'
-  const [y, m, dia] = d.split('-')
-  return `${dia}/${m}/${y}`
+function formatarData(data) {
+  if (!data) return '—'
+
+  const [ano, mes, dia] = data.split('-')
+
+  return `${dia}/${mes}/${ano}`
 }
 
-onMounted(carregar)
+onMounted(() => {
+  carregar()
+})
 </script>
 
 
