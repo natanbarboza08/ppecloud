@@ -31,6 +31,10 @@
           <span>Estoque</span>
         </router-link>
 
+        <router-link to="/dashboard/relatorios" class="menu-item" active-class="active">
+        <span>Relatórios</span>
+        </router-link>
+
       </nav>
 
       <!-- Botão de logout -->

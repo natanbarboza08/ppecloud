@@ -9,6 +9,8 @@ import CadastroFuncionario from '../views/cadastroFuncionario.vue';
 import Entregas from '../views/entregas.vue';
 import CadastroEPI from '../views/cadastroEPI.vue';
 import Estoque from '../views/estoque.vue';
+import relatorios from '../views/relatorios.vue';
+
 // routes
 const routes = [
 { path: '/', component: Home },
@@ -21,7 +23,8 @@ const routes = [
         { path: 'cadastroFuncionario', component: CadastroFuncionario },
         { path: 'entregas', component: Entregas },
         { path: 'cadastroEPI', component: CadastroEPI },
-        { path: 'estoque', component: Estoque }
+        { path: 'estoque', component: Estoque },
+        {path: 'relatorios', component: relatorios },
     ]
 }
 ];
